@@ -8,7 +8,7 @@ output "servicebus_namespace_id" {
   value = "${azurerm_servicebus_namespace.da-svc-svb.default_primary_connection_string}"
 }
 
-#Kust Cluster
+#Kusto Cluster
 output "kusto_cluster-uri" {
   value = "${azurerm_kusto_cluster.da-svc-kusto.data_ingestion_uri}"
 }
