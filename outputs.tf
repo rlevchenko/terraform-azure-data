@@ -3,7 +3,6 @@
 #--------------------------------------------------------------
 
 #Service Bus
-
 output "servicebus_namespace_id" {
   value = "${azurerm_servicebus_namespace.da-svc-svb.default_primary_connection_string}"
 }
