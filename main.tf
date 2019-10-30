@@ -1,5 +1,5 @@
 #-----------------------------------------------------------
-# Main configuration file : Author: https://rlevchenko.com :
+# Main configuration file 
 #-----------------------------------------------------------
 
 #Random string for resources naming

@@ -1,5 +1,5 @@
 #--------------------------------------------------------------
-# Deployment variables ::: Author: https://rlevchenko.com :::
+# Deployment variables 
 #--------------------------------------------------------------
 
 #Naming (prefix)

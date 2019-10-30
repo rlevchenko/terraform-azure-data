@@ -1,5 +1,5 @@
 #--------------------------------------------------------------
-# Deployment settings ::: Author: https://rlevchenko.com :::
+# Deployment settings
 #--------------------------------------------------------------
 
 #Azure principal

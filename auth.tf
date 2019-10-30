@@ -1,5 +1,5 @@
 #-----------------------------------------------------------
-# Provider Authentication : Author: https://rlevchenko.com :
+# Provider Authentication 
 #----------------------------------------------------------
 
 variable "client_secret" {} #Variable to store SP's password
