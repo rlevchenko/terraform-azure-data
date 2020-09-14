@@ -2,19 +2,19 @@
 
 ## Description
 
-Terraform-based deployment of the following Azure resources:
+Terraform-based deployment of the following Azure resources (default deployment settings):
 
-- Azure Service Bus (namespace, topic, subscription, auth.rules)
-- Azure Data Lake Storage
+- Azure Service Bus (Standard, namespace,topic,subscription, auth. rules
+- Azure Data Lake Storage (ZRS, Hot, Secured, StandardV2)
 - Azure Data Factory (w/Git or without)
 - Azure Data Factory linked with Data Lake Storage
 - Azure Data Factory Pipeline
-- Azure DataBricks WorkSpace
-- Azure EventHub (namespace, eventhub)
-- Azure Functions 
-- Azure Data Explorer (Kusto)
-- Azure Analysis Server (backup-enabled)
-- Azure Event Grid (domain)
+- Azure DataBricks WorkSpace (Standard)
+- Azure EventHub (Standard, namespace)
+- Azure Functions (Dynamic, LRS storage, Python, w/App.Insights or without)
+- Azure Data Explorer (Kusto, Standard_D11_v2, 2 nodes)
+- Azure Analysis Server (backup-enabled,S0, LRS, Standard)
+- Azure Event Grid (domain, EventGridSchema)
 
 ## Content
 
