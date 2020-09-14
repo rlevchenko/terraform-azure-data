@@ -57,6 +57,6 @@ If Analysis Server is going to be deployed:
 
 ## Result
 
-![Azure Resources](https://rlevchenko.files.wordpress.com/2020/09/image-2.png?w=768)
+![Azure Resources](https://rlevchenko.files.wordpress.com/2020/09/image-2.png)
 
-![Terraform output](https://rlevchenko.files.wordpress.com/2020/09/image-3.png?w=768)
+![Terraform output](https://rlevchenko.files.wordpress.com/2020/09/image-3.png)
