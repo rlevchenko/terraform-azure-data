@@ -1,5 +1,5 @@
 #-----------------------------------------------------------
-# Main configuration file 
+# Main configuration file | rlevchenko.com
 #-----------------------------------------------------------
 
 #Random string for resources naming
@@ -11,20 +11,6 @@ resource "random_string" "rndstr" {
   special = false
 }
 
-#Password generator (can be used with any VMs if needed)
-resource "random_string" "pwd" {
-  length           = 12
-  lower            = true
-  number           = true
-  upper            = true
-  special          = true
-  override_special = "!#"
-  min_numeric      = 3
-  min_lower        = 3
-  min_upper        = 3
-  min_special      = 2
-}
-
 #Resource group
 resource "azurerm_resource_group" "az_rg" {
   name     = "${var.prefix}-${var.suffix}"
@@ -33,7 +19,8 @@ resource "azurerm_resource_group" "az_rg" {
 }
 
 #Service Bus namespace
-resource "azurerm_servicebus_namespace" "da-svc-svb" {
+resource "azurerm_servicebus_namespace" "rlmvp-svc-svb" {
+  count               = var.servicebus != "false" ? 1 : 0
   name                = "${var.prefix}-sbns"
   resource_group_name = azurerm_resource_group.az_rg.name
   location            = var.az_region
@@ -44,10 +31,11 @@ resource "azurerm_servicebus_namespace" "da-svc-svb" {
 }
 
 #Service Bus namespaces authorization rule (in addition to the default one)
-resource "azurerm_servicebus_namespace_authorization_rule" "da-svc-svb-rule" {
+resource "azurerm_servicebus_namespace_authorization_rule" "rlmvp-svc-svb-rule" {
+  count               = var.servicebus != "false" ? 1 : 0
   name                = "${var.prefix}-nsrule-${var.suffix}"
-  namespace_name      = "${azurerm_servicebus_namespace.da-svc-svb.name}"
-  resource_group_name = "${azurerm_resource_group.az_rg.name}"
+  namespace_name      = azurerm_servicebus_namespace.rlmvp-svc-svb[count.index].name
+  resource_group_name = azurerm_resource_group.az_rg.name
   #Permissions
   listen = var.az_sb_rule_listen
   send   = var.az_sb_rule_send
@@ -55,21 +43,23 @@ resource "azurerm_servicebus_namespace_authorization_rule" "da-svc-svb-rule" {
 }
 
 #Service bus topic
-resource "azurerm_servicebus_topic" "da-svc-svb-topic" {
+resource "azurerm_servicebus_topic" "rlmvp-svc-svb-topic" {
+  count                        = var.servicebus != "false" ? 1 : 0
   name                         = "${var.prefix}-topic-${var.suffix}"
-  resource_group_name          = "${azurerm_resource_group.az_rg.name}"
-  namespace_name               = "${azurerm_servicebus_namespace.da-svc-svb.name}"
+  resource_group_name          = azurerm_resource_group.az_rg.name
+  namespace_name               = azurerm_servicebus_namespace.rlmvp-svc-svb[count.index].name
   enable_partitioning          = var.az_sb_topic_partitioning
   requires_duplicate_detection = var.az_sb_topic_duplicatedetection
 }
 
 #Service Bus Topic Authorization Rule
 
-resource "azurerm_servicebus_topic_authorization_rule" "da-svc-svb-topicrule" {
+resource "azurerm_servicebus_topic_authorization_rule" "rlmvp-svc-svb-topicrule" {
+  count               = var.servicebus != "false" ? 1 : 0
   name                = "${var.prefix}-rule-${var.suffix}"
-  namespace_name      = "${azurerm_servicebus_namespace.da-svc-svb.name}"
-  topic_name          = "${azurerm_servicebus_topic.da-svc-svb-topic.name}"
-  resource_group_name = "${azurerm_resource_group.az_rg.name}"
+  namespace_name      = azurerm_servicebus_namespace.rlmvp-svc-svb[count.index].name
+  topic_name          = azurerm_servicebus_topic.rlmvp-svc-svb-topic[count.index].name
+  resource_group_name = azurerm_resource_group.az_rg.name
   #Permissions
   listen = var.az_sb_topic_rule_listen
   send   = var.az_sb_topic_rule_send
@@ -77,18 +67,20 @@ resource "azurerm_servicebus_topic_authorization_rule" "da-svc-svb-topicrule" {
 }
 
 #Service Bus Topic Subscription 
-resource "azurerm_servicebus_subscription" "da-svc-svb-sub" {
+resource "azurerm_servicebus_subscription" "rlmvp-svc-svb-sub" {
+  count                                = var.servicebus != "false" ? 1 : 0
   name                                 = "${var.prefix}-sbsub-${var.suffix}"
-  resource_group_name                  = "${azurerm_resource_group.az_rg.name}"
-  namespace_name                       = "${azurerm_servicebus_namespace.da-svc-svb.name}"
-  topic_name                           = "${azurerm_servicebus_topic.da-svc-svb-topic.name}"
+  resource_group_name                  = azurerm_resource_group.az_rg.name
+  namespace_name                       = azurerm_servicebus_namespace.rlmvp-svc-svb[count.index].name
+  topic_name                           = azurerm_servicebus_topic.rlmvp-svc-svb-topic[count.index].name
   max_delivery_count                   = var.az_sb_sub_delcount
   dead_lettering_on_message_expiration = var.az_sb_sub_deadlettering
   requires_session                     = var.az_sb_sub_sessions
 }
 
 #Azure Data Lake storage
-resource "azurerm_storage_account" "da-svc-lake" {
+resource "azurerm_storage_account" "rlmvp-svc-lake" {
+  count                     = var.datafactory == "true" || var.datafactory_git == "true" ? 1 : 0
   name                      = "${var.prefix}lake${random_string.rndstr.result}"
   resource_group_name       = azurerm_resource_group.az_rg.name
   location                  = var.az_region
@@ -101,8 +93,8 @@ resource "azurerm_storage_account" "da-svc-lake" {
 }
 
 #Azure Data Factory (w/GIT)
-resource "azurerm_data_factory" "da-svc-factory-git" {
-  count               = "${var.az_datafactory_git != "false" ? 1 : 0}"
+resource "azurerm_data_factory" "rlmvp-svc-factory-git" {
+  count               = var.datafactory == "true" && var.datafactory_git == "true" ? 1 : 0
   name                = "${var.prefix}-factorygit-${var.suffix}"
   resource_group_name = azurerm_resource_group.az_rg.name
   location            = var.az_region
@@ -117,8 +109,8 @@ resource "azurerm_data_factory" "da-svc-factory-git" {
 }
 
 #Azure Data Factory
-resource "azurerm_data_factory" "da-svc-factory" {
-  count               = "${var.az_datafactory_git != "true" ? 1 : 0}"
+resource "azurerm_data_factory" "rlmvp-svc-factory" {
+  count               = var.datafactory == "true" && var.datafactory_git == "false" ? 1 : 0
   name                = "${var.prefix}-factory-${var.suffix}"
   resource_group_name = azurerm_resource_group.az_rg.name
   location            = var.az_region
@@ -127,25 +119,28 @@ resource "azurerm_data_factory" "da-svc-factory" {
 
 #Azure Data Factory Linking with Data Lake Storage
 
-resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "da-svc-factory-linking" {
+resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "rlmvp-svc-factory-linking" {
+  count                 = var.datafactory == "true" || var.datafactory_git == "true" ? 1 : 0
   name                  = "${var.prefix}-storlink-${var.suffix}"
   resource_group_name   = azurerm_resource_group.az_rg.name
-  data_factory_name     = (var.az_datafactory_git != "true" ? azurerm_data_factory.da-svc-factory[0].name : azurerm_data_factory.da-svc-factory-git[0].name)
+  data_factory_name     = (var.datafactory_git != "true" ? azurerm_data_factory.rlmvp-svc-factory[count.index].name : azurerm_data_factory.rlmvp-svc-factory-git[count.index].name)
   service_principal_id  = var.client_id
   service_principal_key = var.client_secret
   tenant                = var.tenant_id
-  url                   = azurerm_storage_account.da-svc-lake.primary_dfs_endpoint
+  url                   = azurerm_storage_account.rlmvp-svc-lake[count.index].primary_dfs_endpoint
 }
 
 # Azure Data Factory Pipeline
-resource "azurerm_data_factory_pipeline" "da-svc-pipeline" {
+resource "azurerm_data_factory_pipeline" "rlmvp-svc-pipeline" {
+  count               = var.datafactory == "true" ? 1 : 0
   name                = "${var.prefix}-dfpipe-${var.suffix}"
   resource_group_name = azurerm_resource_group.az_rg.name
-  data_factory_name   = (var.az_datafactory_git != "true" ? azurerm_data_factory.da-svc-factory[0].name : azurerm_data_factory.da-svc-factory-git[0].name)
+  data_factory_name   = (var.datafactory_git != "true" ? azurerm_data_factory.rlmvp-svc-factory[count.index].name : azurerm_data_factory.rlmvp-svc-factory-git[count.index].name)
 }
 
 #Azure DataBricks Workspace
-resource "azurerm_databricks_workspace" "da-svc-databricks" {
+resource "azurerm_databricks_workspace" "rlmvp-svc-databricks" {
+  count               = var.databricks != "false" ? 1 : 0
   name                = "${var.prefix}-spark-${var.suffix}"
   resource_group_name = azurerm_resource_group.az_rg.name
   location            = var.az_region
@@ -154,7 +149,8 @@ resource "azurerm_databricks_workspace" "da-svc-databricks" {
 }
 
 #Azure Event Hub Namespace
-resource "azurerm_eventhub_namespace" "da-svc-hubns" {
+resource "azurerm_eventhub_namespace" "rlmvp-svc-hubns" {
+  count                    = var.eventhub != "false" ? 1 : 0
   name                     = "${var.prefix}-ehubns-${var.suffix}"
   location                 = var.az_region
   resource_group_name      = azurerm_resource_group.az_rg.name
@@ -162,14 +158,14 @@ resource "azurerm_eventhub_namespace" "da-svc-hubns" {
   capacity                 = var.az_hubns_capacity
   auto_inflate_enabled     = (var.az_hubns_sku != "Basic" ? var.az_hub_inflate : "false")
   maximum_throughput_units = (var.az_hub_inflate != "false" ? var.az_hubns_maxunits : "0")
-  kafka_enabled            = (var.az_hubns_sku != "Basic" ? var.az_hub_kafka : "false")
   tags                     = var.az_tags
 }
 
 #Azure Event Hub
-resource "azurerm_eventhub" "da-svc-hub" {
+resource "azurerm_eventhub" "rlmvp-svc-hub" {
+  count               = var.eventhub != "false" ? 1 : 0
   name                = "${var.prefix}-hub-${var.suffix}"
-  namespace_name      = azurerm_eventhub_namespace.da-svc-hubns.name
+  namespace_name      = azurerm_eventhub_namespace.rlmvp-svc-hubns[count.index].name
   resource_group_name = azurerm_resource_group.az_rg.name
   partition_count     = var.az_hub_partcount
   message_retention   = var.az_hub_retention
@@ -177,7 +173,8 @@ resource "azurerm_eventhub" "da-svc-hub" {
 }
 
 #Azure Functions
-resource "azurerm_storage_account" "da-svc-storacc" {
+resource "azurerm_storage_account" "rlmvp-svc-storacc" {
+  count                    = var.functions != "false" ? 1 : 0
   name                     = "${var.prefix}stor${random_string.rndstr.result}"
   resource_group_name      = azurerm_resource_group.az_rg.name
   location                 = var.az_region
@@ -187,7 +184,8 @@ resource "azurerm_storage_account" "da-svc-storacc" {
   tags                     = var.az_tags
 }
 
-resource "azurerm_app_service_plan" "da-svc-appplan" {
+resource "azurerm_app_service_plan" "rlmvp-svc-appplan" {
+  count               = var.functions != "false" ? 1 : 0
   name                = "${var.prefix}appplan${random_string.rndstr.result}"
   location            = var.az_region
   resource_group_name = azurerm_resource_group.az_rg.name
@@ -200,8 +198,8 @@ resource "azurerm_app_service_plan" "da-svc-appplan" {
   tags = var.az_tags
 }
 
-resource "azurerm_application_insights" "da-svc-appins" {
-  count               = "${var.az_appins_enable == "true" ? 1 : 0}"
+resource "azurerm_application_insights" "rlmvp-svc-appins" {
+  count               = var.functions == "true" && var.functions_appins == "true" ? 1 : 0
   name                = "${var.prefix}appins${random_string.rndstr.result}"
   location            = var.az_region
   resource_group_name = azurerm_resource_group.az_rg.name
@@ -209,26 +207,30 @@ resource "azurerm_application_insights" "da-svc-appins" {
   tags                = var.az_tags
 }
 
-resource "azurerm_function_app" "da-svc-function-appins" {
-  count                     = "${var.az_appins_enable == "true" ? 1 : 0}"
-  name                      = "${var.prefix}function${random_string.rndstr.result}"
-  location                  = var.az_region
-  resource_group_name       = azurerm_resource_group.az_rg.name
-  app_service_plan_id       = azurerm_app_service_plan.da-svc-appplan.id
-  storage_connection_string = azurerm_storage_account.da-svc-storacc.primary_connection_string
+resource "azurerm_function_app" "rlmvp-svc-function-appins" {
+  count                      = var.functions == "true" && var.functions_appins == "true" ? 1 : 0
+  name                       = "${var.prefix}function${random_string.rndstr.result}"
+  location                   = var.az_region
+  resource_group_name        = azurerm_resource_group.az_rg.name
+  app_service_plan_id        = azurerm_app_service_plan.rlmvp-svc-appplan[count.index].id
+  storage_account_name       = azurerm_storage_account.rlmvp-svc-storacc[count.index].name
+  storage_account_access_key = azurerm_storage_account.rlmvp-svc-storacc[count.index].primary_access_key
+  # storage_connection_string = azurerm_storage_account.rlmvp-svc-storacc[count.index].primary_connection_string (deprecated; works though)
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME"       = var.az_funcapp_runtime
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.da-svc-appins[0].instrumentation_key
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.rlmvp-svc-appins[count.index].instrumentation_key
   }
   tags = var.az_tags
 }
-resource "azurerm_function_app" "da-svc-function" {
-  count                     = "${var.az_appins_enable == "false" ? 1 : 0}"
-  name                      = "${var.prefix}function${random_string.rndstr.result}"
-  location                  = var.az_region
-  resource_group_name       = azurerm_resource_group.az_rg.name
-  app_service_plan_id       = azurerm_app_service_plan.da-svc-appplan.id
-  storage_connection_string = azurerm_storage_account.da-svc-storacc.primary_connection_string
+resource "azurerm_function_app" "rlmvp-svc-function" {
+  count                      = var.functions == "true" && var.functions_appins == "false" ? 1 : 0
+  name                       = "${var.prefix}function${random_string.rndstr.result}"
+  location                   = var.az_region
+  resource_group_name        = azurerm_resource_group.az_rg.name
+  app_service_plan_id        = azurerm_app_service_plan.rlmvp-svc-appplan[count.index].id
+  storage_account_name       = azurerm_storage_account.rlmvp-svc-storacc[count.index].name
+  storage_account_access_key = azurerm_storage_account.rlmvp-svc-storacc[count.index].primary_access_key
+  # storage_connection_string = azurerm_storage_account.rlmvp-svc-storacc[count.index].primary_connection_string (deprecated; works though)
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME" = var.az_funcapp_runtime
   }
@@ -237,7 +239,8 @@ resource "azurerm_function_app" "da-svc-function" {
 
 #Azure Data Explorer (Kusto cluster)
 
-resource "azurerm_kusto_cluster" "da-svc-kusto" {
+resource "azurerm_kusto_cluster" "rlmvp-svc-kusto" {
+  count               = var.kusto == "true" ? 1 : 0
   name                = "${var.prefix}kusto${random_string.rndstr.result}"
   location            = var.az_region
   resource_group_name = azurerm_resource_group.az_rg.name
@@ -250,7 +253,8 @@ resource "azurerm_kusto_cluster" "da-svc-kusto" {
 
 #Azure Analysis Server with BackUp Enabled
 
-resource "azurerm_storage_account" "da-svc-stor-ansrv" {
+resource "azurerm_storage_account" "rlmvp-svc-stor-ansrv" {
+  count                    = var.analysis == "true" ? 1 : 0
   name                     = "${var.prefix}ansrvstor${random_string.rndstr.result}"
   resource_group_name      = azurerm_resource_group.az_rg.name
   location                 = var.az_region
@@ -261,18 +265,18 @@ resource "azurerm_storage_account" "da-svc-stor-ansrv" {
 }
 
 #Storage Container
-resource "azurerm_storage_container" "da-svc-stor-ansrv-cont" {
+resource "azurerm_storage_container" "rlmvp-svc-stor-ansrv-cont" {
+  count                 = var.analysis == "true" ? 1 : 0
   name                  = "${var.prefix}ansrv${random_string.rndstr.result}"
-  resource_group_name   = azurerm_resource_group.az_rg.name
-  storage_account_name  = azurerm_storage_account.da-svc-stor-ansrv.name
+  storage_account_name  = azurerm_storage_account.rlmvp-svc-stor-ansrv[count.index].name
   container_access_type = "private"
 }
 
 #Storage Account SSA Token generation
 data "azurerm_storage_account_blob_container_sas" "cont-sas" {
-
-  connection_string = "${azurerm_storage_account.da-svc-stor-ansrv.primary_connection_string}"
-  container_name    = "${azurerm_storage_container.da-svc-stor-ansrv-cont.name}"
+  count             = var.analysis == "true" ? 1 : 0
+  connection_string = azurerm_storage_account.rlmvp-svc-stor-ansrv[count.index].primary_connection_string
+  container_name    = azurerm_storage_container.rlmvp-svc-stor-ansrv-cont[count.index].name
   https_only        = true
   start             = var.az_stor_ssa_start
   expiry            = var.az_stor_ssa_end
@@ -287,19 +291,21 @@ data "azurerm_storage_account_blob_container_sas" "cont-sas" {
 }
 
 #Analysis Server
-resource "azurerm_analysis_services_server" "da-svc-ansrv" {
+resource "azurerm_analysis_services_server" "rlmvp-svc-ansrv" {
+  count                     = var.analysis == "true" ? 1 : 0
   name                      = "${var.prefix}ansrv${random_string.rndstr.result}"
   location                  = var.az_region
   resource_group_name       = azurerm_resource_group.az_rg.name
   sku                       = var.az_ansrv_sku
   admin_users               = var.az_ansrv_users
   enable_power_bi_service   = var.az_ansrv_powerbi
-  backup_blob_container_uri = "${azurerm_storage_container.da-svc-stor-ansrv-cont.id}${data.azurerm_storage_account_blob_container_sas.cont-sas.sas}"
+  backup_blob_container_uri = "${azurerm_storage_container.rlmvp-svc-stor-ansrv-cont[count.index].id}${data.azurerm_storage_account_blob_container_sas.cont-sas[count.index].sas}"
   tags                      = var.az_tags
 }
 
 #Azure Event Grid
-resource "azurerm_eventgrid_domain" "da-svc-eventgrid" {
+resource "azurerm_eventgrid_domain" "rlmvp-svc-eventgrid" {
+  count               = var.eventgrid == "true" ? 1 : 0
   name                = "${var.prefix}eventgrid${random_string.rndstr.result}"
   location            = var.az_region
   resource_group_name = azurerm_resource_group.az_rg.name
@@ -307,9 +313,5 @@ resource "azurerm_eventgrid_domain" "da-svc-eventgrid" {
   tags                = var.az_tags
 }
 
-#--------------------------------------------------------
-# ::: Author: https://rlevchenko.com :::
-#--------------------------------------------------------
-
-
-
+#-----------------------------------------------------------
+# Roman Levchenko | rlevchenko.com

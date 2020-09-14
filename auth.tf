@@ -1,11 +1,11 @@
 #-----------------------------------------------------------
-# Provider Authentication 
+# Provider Authentication | rlevchenko.com
 #----------------------------------------------------------
 
-variable "client_secret" {} #Variable to store SP's password
-variable "client_id" {}
-variable "subscr_id" {}
-variable "tenant_id" {}
+variable "client_secret" {} # Variable to store SP's password
+variable "client_id" {}     # Application ID
+variable "subscr_id" {}     # Subscription ID
+variable "tenant_id" {}     # Tenant ID
 
 provider "azurerm" {
   version         = ">= 1.35.0" # (optional) provider's version
@@ -13,8 +13,7 @@ provider "azurerm" {
   client_id       = var.client_id
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
+  features {}
 }
-
-#--------------------------------------------------------
-# ::: Author: https://rlevchenko.com :::
-#--------------------------------------------------------
+#-----------------------------------------------------------
+# Roman Levchenko | rlevchenko.com
