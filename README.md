@@ -1,4 +1,4 @@
-# azure-datalake-infra
+# Azure Data Services deployment using Terraform
 
 ## Description
 
@@ -53,4 +53,4 @@ Azure Service Principal with Contributor rights or higher:
 
 If Analysis Server is going to be deployed:
 
-- valid Azure AD user(s) email(s) (will be AS admin(s))
+- valid Azure AD user(s) UPN(s) (will be AS admin(s))
