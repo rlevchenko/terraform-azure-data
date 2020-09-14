@@ -54,3 +54,9 @@ Azure Service Principal with Contributor rights or higher:
 If Analysis Server is going to be deployed:
 
 - valid Azure AD user(s) UPN(s) (will be AS admin(s))
+
+## Result
+
+![Azure Resources](https://rlevchenko.files.wordpress.com/2020/09/image-2.png?w=768)
+
+![Terraform output](https://rlevchenko.files.wordpress.com/2020/09/image-3.png?w=768)
