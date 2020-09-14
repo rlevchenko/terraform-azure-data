@@ -2,7 +2,7 @@
 
 ## Description
 
-Terraform-based deployment of the following Azure resources (here, I am providing default deployment settings):
+Terraform-based deployment of the following Azure resources (default deployment settings are in the parenthesis):
 
 - Azure Service Bus (Standard, namespace,topic,subscription, auth. rules
 - Azure Data Lake Storage (ZRS, Hot, Secured, StandardV2)
