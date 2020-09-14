@@ -3,9 +3,9 @@
 #--------------------------------------------------------------
 
 # Azure principal
-client_id = "36070b66-0a7b-4bd6-adc8-e9af4a42e451" # Application ID
-subscr_id = "12862a05-c847-4c49-a159-ff074bcefaf4" # Subscription ID
-tenant_id = "d373cb19-d4db-4f95-aedf-363199c531aa" # Tenant ID
+client_id = "36070b66-0a7b-4bd6-adc8-e9xxx" # Application ID
+subscr_id = "12862a05-c847-4c49-a159-ffxxx" # Subscription ID
+tenant_id = "d373cb19-d4db-4f95-aedf-36xxx" # Tenant ID
 
 # Azure region
 
@@ -14,7 +14,7 @@ az_region = "West Europe"
 # Azure tags
 
 az_tags = {
-  environment = "rllabs"
+  environment = "rlevchenko"
 }
 
 # Naming convention
