@@ -4,7 +4,7 @@
 
 Terraform-based deployment of the following Azure resources (default deployment settings are in the parenthesis):
 
-- Azure Service Bus (Standard, namespace,topic,subscription, auth. rules
+- Azure Service Bus (Standard, namespace,topic,subscription, auth. rules)
 - Azure Data Lake Storage (ZRS, Hot, Secured, StandardV2)
 - Azure Data Factory (w/Git or without)
 - Azure Data Factory linked with Data Lake Storage
