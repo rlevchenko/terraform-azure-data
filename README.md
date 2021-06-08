@@ -60,6 +60,6 @@ If Analysis Server is going to be deployed:
 
 ## Result
 
-![Azure Resources](https://rlevchenko.files.wordpress.com/2020/09/image-2.png)
+![Azure Resources](https://rlevchenko.files.wordpress.com/2021/06/tf-azure-data-list-resources.jpg)
 
-![Terraform output](https://rlevchenko.files.wordpress.com/2020/09/image-3.png)
+![Terraform output](https://rlevchenko.files.wordpress.com/2021/06/tf-azure-deployed-resources-output.jpg)
