@@ -37,7 +37,7 @@ eventgrid        = true  # Azure EventGrid
 kusto            = true  # Azure Data Explorer (kusto)
 analysis         = true  # Azure Analysis Server
 sqlserver        = true  # Azure SQL Server 
-sqlep            = false  # Azure SQL Elastic Pool
+sqlep            = true  # Azure SQL Elastic Pool
 sqldb            = true  # Azure SQL Database
 
 
