@@ -237,6 +237,51 @@ resource "azurerm_function_app" "rlmvp-svc-function" {
   tags = var.az_tags
 }
 
+#Azure SQL Server
+resource "azurerm_sql_server" "rlmvp-svc-sql-server" {
+  count                        = var.sqlserver == "true" ? 1 : 0
+  name                         = "${var.prefix}sqlsrv${random_string.rndstr.result}"
+  resource_group_name          = azurerm_resource_group.az_rg.name
+  location                     = var.az_region
+  version                      = var.az_sqlserver_version
+  administrator_login          = var.az_sqlserver_username
+  administrator_login_password = var.az_sqlserver_password
+  tags                         = var.az_tags
+}
+
+#Azure SQL Elastic Pool
+resource "azurerm_mssql_elasticpool" "rlmvp-svc-sql-elastic-pool" {
+  count               = var.sqlep == "true" && var.sqlserver == "true" ? 1 : 0
+  name                = "${var.prefix}sqlep${random_string.rndstr.result}"
+  resource_group_name = azurerm_resource_group.az_rg.name
+  location            = var.az_region
+  server_name         = azurerm_sql_server.rlmvp-svc-sql-server[count.index].name
+  license_type        = var.az_sql_ep_license_type
+  max_size_gb         = var.az_sql_ep_maxsize
+  sku {
+    name     = var.az_sql_ep_sku_name
+    tier     = var.az_sql_ep_tier
+    capacity = var.az_sql_ep_capacity
+  }
+  per_database_settings {
+    min_capacity = var.az_sql_ep_db_min_capacity
+    max_capacity = var.az_sql_ep_db_max_capacity
+  }
+  tags = var.az_tags
+
+}
+
+#Azure SQL Database
+resource "azurerm_mssql_database" "rlmvp-svc-sql-db" {
+  count           = var.sqlserver == "true" && var.sqldb == "true" ? 1 : 0
+  name            = "${var.prefix}sqldb${random_string.rndstr.result}"
+  elastic_pool_id = var.sqlep == "true" ? azurerm_mssql_elasticpool.rlmvp-svc-sql-elastic-pool[count.index].id : null
+  server_id       = azurerm_sql_server.rlmvp-svc-sql-server[count.index].id
+  max_size_gb     = var.az_sql_db_maxsize
+  sku_name        = var.az_sql_db_sku_name
+  tags            = var.az_tags
+}
+
 #Azure Data Explorer (Kusto cluster)
 
 resource "azurerm_kusto_cluster" "rlmvp-svc-kusto" {

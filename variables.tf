@@ -66,6 +66,21 @@ variable "analysis" {
   description = "deploy azure analysis server or not?"
 }
 
+variable "sqlserver" {
+  type        = string
+  description = "deploy azure sql server or not?"
+}
+
+variable "sqlep" {
+  type        = string
+  description = "deploy azure sql elastic pool or not?"
+}
+
+variable "sqldb" {
+  type        = string
+  description = "deploy azure sql database or not?"
+}
+
 #Location
 variable "az_region" {
   type        = string
@@ -74,7 +89,7 @@ variable "az_region" {
 
 #Tags
 variable "az_tags" {
-  type        = map
+  type        = map(any)
   description = "The default tags for resources and resources groups"
 }
 
@@ -321,6 +336,105 @@ variable "az_eventgrid_schema" {
   type        = string
   description = "Azure Event Grid Schema"
 }
+
+#SQL Server
+variable "az_sqlserver_name" {
+  type        = string
+  description = "Azure SQL Server Name"
+}
+
+variable "az_sqlserver_version" {
+  type        = string
+  description = "Azure SQL Server Version"
+  validation {
+    condition     = can(regex("2.0|12.0", var.az_sqlserver_version))
+    error_message = "SQL Server Version must be '2.0' for v11 SQL Server or '12.0' if you need v12 Server."
+  }
+}
+
+variable "az_sqlserver_username" {
+  type        = string
+  description = "Azure SQL Server Admin UserName"
+}
+
+variable "az_sqlserver_password" {
+  type        = string
+  description = "Azure SQL Server Admin's Password"
+  validation {
+    condition     = length(var.az_sqlserver_password) > 8 && can(regex("(^.*[A-Z0-9].*[[:punct:]].*$)", var.az_sqlserver_password)) # meets Azure SQL password's policy
+    error_message = "SQL Server Admin's password must contain more than 6 symbols (lowercase + upper-case and special/punctuation characters!)."
+  }
+
+}
+
+variable "az_sql_ep_name" {
+  type        = string
+  description = "Azure SQL Elastic Pool Name"
+}
+
+variable "az_sql_ep_license_type" {
+  type        = string
+  description = "Azure SQL Elastic Pool License Type"
+  validation {
+    condition     = can(regex("LicenseIncluded|BasePrice", var.az_sql_ep_license_type))
+    error_message = "SQL Server Elastic Pool License Type must either LicenseIncluded or BasePrice."
+  }
+}
+
+variable "az_sql_ep_maxsize" {
+  type        = string
+  description = "Azure SQL Elastic Pool Max Size"
+}
+
+variable "az_sql_ep_sku_name" {
+  type        = string
+  description = "Azure SQL Elastic Pool SKU Type Name"
+  validation {
+    condition     = can(regex("BasicPool|StandardPool|PremiumPool", var.az_sql_ep_sku_name))
+    error_message = "Provide a valid SQL Server Elastic Pool SKU Type Name (DTU-based)."
+  }
+}
+
+variable "az_sql_ep_capacity" {
+  type        = string
+  description = "Azure SQL Elastic Pool Capacity (eDTU actually)"
+}
+
+variable "az_sql_ep_tier" {
+  type        = string
+  description = "Azure SQL Elastic Pool Tier"
+  validation {
+    condition     = can(regex("Basic|Standard|Premium", var.az_sql_ep_tier))
+    error_message = "Provide a valid SQL Server Elastic Pool Tier (Basic, for instance)."
+  }
+}
+
+variable "az_sql_ep_db_min_capacity" {
+  type        = string
+  description = "Azure SQL Elastic Pool Min Per-DB Capacity"
+}
+
+variable "az_sql_ep_db_max_capacity" {
+  type        = string
+  description = "Azure SQL Elastic Pool Min Per-DB Capacity"
+}
+
+
+variable "az_sql_db_name" {
+  type        = string
+  description = "Azure SQL Database Name"
+}
+
+variable "az_sql_db_maxsize" {
+  type        = string
+  description = "Azure SQL Database Max Size"
+}
+
+variable "az_sql_db_sku_name" {
+  type        = string
+  description = "Azure SQL Database SKU Name"
+}
+
 
 #-----------------------------------------------------------
 # Roman Levchenko | rlevchenko.com

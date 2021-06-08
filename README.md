@@ -15,6 +15,9 @@ Terraform-based deployment of the following Azure resources (default deployment 
 - Azure Data Explorer (Kusto, Standard_D11_v2, 2 nodes)
 - Azure Analysis Server (backup-enabled,S0, LRS, Standard)
 - Azure Event Grid (domain, EventGridSchema)
+- Azure SQL Server (version 12.0)
+- Azure SQL Database (ElasticPool, 5 GB max data size)
+- Azure SQL Elastic Pool (StandartPool, LicenseIncluded, 50 eDTU, 50GB max data size)
 
 ## Content
 
@@ -37,7 +40,7 @@ Control the deployment size:
 - Run terraform apply to start deployment
 - (optional) terraform destroy to delete Azure resources
 
-Tested with the latest terraform 0.13.2 and AzureRM provider 2.27.0:
+Tested with the latest terraform 0.15.5 and AzureRM provider 2.62.0:
 
 Download the latest terraform: 
 https://www.terraform.io/downloads.html
