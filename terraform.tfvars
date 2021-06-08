@@ -151,7 +151,7 @@ az_eventgrid_schema = "EventGridSchema" # EventGridSchema or CloudEventV01Schema
 az_sqlserver_name = "rlsqlsrv01" # SQL Server Name (optional: random used)
 az_sqlserver_version = "12.0" # SQL Server Version (2.0 or 12.0 basically)
 az_sqlserver_username = "rladmin" # SQL Admin's username
-az_sqlserver_password = "Pass!13!#" # SQL Admin's password 
+az_sqlserver_password = "yourPassW0rD!$" # SQL Admin's password 
 
 #Elastic Pool
 az_sql_ep_name = "rlsqlep01" # SQL Elastic Pool Name (optional: random used)
