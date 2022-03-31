@@ -45,6 +45,8 @@ Tested with the latest terraform 0.15.5 and AzureRM provider 2.62.0:
 Download the latest terraform: 
 https://www.terraform.io/downloads.html
 
+Update: for_each blocks will be added soon
+
 ## Requirements
 
 Azure Service Principal with Contributor rights or higher:
