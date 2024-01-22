@@ -45,7 +45,8 @@ Tested with the latest terraform 0.15.5 and AzureRM provider 2.62.0:
 Download the latest terraform: 
 https://www.terraform.io/downloads.html
 
-Update: for_each blocks will be added soon
+Count blocks are used frequently in this repo. If you need example of for_each block, check my gist:
+https://gist.github.com/rlevchenko/358ad95cc5641bc26d2a5705c2c8dbfd
 
 ## Requirements
 
